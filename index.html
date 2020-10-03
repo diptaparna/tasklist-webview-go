@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello Webview</title>
+    <script>
+        // document.oncontextmenu = function (e) {
+        //     e.preventDefault();
+        // };
+        window.onload = function () {
+            onLoad();
+        }
+
+        function addTask(task, prepend = false) {
+            let taskId = task.Id;
+            let title = task.Title;
+            let description = task.Description;
+            let isDone = task.Done;
+
+            let d = document.createElement('div');
+            d.setAttribute('id', 'task-' + taskId);
+            let h = document.createElement('h3');
+            h.innerText = title;
+            h.setAttribute("contenteditable", true);
+            h.oninput = function () {
+                h.style.color = 'blue';
+            }
+            h.onfocusout = function () {
+                task.Title = h.innerText;
+                h.style.color = '';
+                updateTask(task);
+            }
+            let p = document.createElement('p');
+            p.innerText = description;
+            p.setAttribute("contenteditable", true);
+            p.oninput = function () {
+                p.style.color = 'blue';
+            }
+            p.onfocusout = function () {
+                task.Description = p.innerText;
+                p.style.color = '';
+                updateTask(task);
+            }
+            let c = document.createElement('input');
+            c.setAttribute('type', 'checkbox');
+            c.checked = isDone;
+            if (isDone)
+                d.style.color = 'grey';
+            else
+                d.style.color = 'black';
+            c.onclick = function () {
+                isDone = c.checked;
+                if (isDone)
+                    d.style.color = 'grey';
+                else
+                    d.style.color = 'black';
+                task.Done = isDone;
+                updateTask(task);
+            }
+            let l = document.createElement("label")
+            l.setAttribute('for', c.id);
+            l.innerText = 'Done';
+            let b = document.createElement('button');
+            b.innerText = 'Delete';
+            b.onclick = function () {
+                d.remove();
+                deleteTask(task);
+            }
+            d.appendChild(h);
+            d.appendChild(p);
+            d.appendChild(c);
+            d.appendChild(l);
+            d.appendChild(b);
+            let tasksList = document.getElementById('tasksList');
+            if (prepend)
+                tasksList.prepend(d);
+            else
+                tasksList.appendChild(d);
+        }
+
+        function newTask() {
+            let task = {
+                Title: 'New Task',
+                Description: 'Please add the task description.\nClick on the Title and Description to modify them.',
+            }
+            createTask(task).then(function (res) {
+                task.Id = res;
+                addTask(task, true);
+            })
+        }
+    </script>
+</head>
+<body>
+<button onclick="newTask()">New Task</button>
+<div id="tasksList"></div>
+</body>
+</html>
