@@ -80,7 +80,7 @@ func createTask(task Task) int64 {
 }
 
 func main() {
-	db, err = sql.Open("sqlite3", "taskdb.sqlite3")
+	db, err = sql.Open("sqlite3", "assets/taskdb.sqlite3")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,8 +99,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	w.Navigate(fmt.Sprintf("file://%s/index.html", PWD))
-
+	w.Navigate(fmt.Sprintf("file://%s/assets/index.html", PWD))
 	w.Bind("onLoad", onLoad)
 	w.Bind("updateTask", updateTask)
 	w.Bind("createTask", createTask)
