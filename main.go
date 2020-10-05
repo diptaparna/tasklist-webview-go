@@ -34,9 +34,10 @@ func AddTask(task Task) {
 }
 
 func onLoad() {
-	rows, err := db.Query("select id, title, description, done from task order by created desc")
+	rows, err := db.Query("SELECT id, title, description, done FROM task ORDER BY created DESC")
 	if err != nil {
-		log.Fatal(err)
+		createDB()
+		rows, err = db.Query("SELECT id, title, description, done FROM task ORDER BY created DESC")
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -54,21 +55,21 @@ func onLoad() {
 }
 
 func updateTask(task Task) {
-	_, err := db.Exec("update task set title=?, description=?, done=? where id=?", task.Title, task.Description, task.Done, task.Id)
+	_, err := db.Exec("UPDATE task SET title=?, description=?, done=? WHERE id=?", task.Title, task.Description, task.Done, task.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func deleteTask(task Task) {
-	_, err := db.Exec("delete from task where id=?", task.Id)
+	_, err := db.Exec("DELETE FROM task WHERE id=?", task.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func createTask(task Task) int64 {
-	res, err := db.Exec("insert into task (title, description) values (?,?)", task.Title, task.Description)
+	res, err := db.Exec("INSERT INTO task (title, description) VALUES (?,?)", task.Title, task.Description)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,6 +78,27 @@ func createTask(task Task) int64 {
 		log.Fatal(err)
 	}
 	return taskId
+}
+
+func createDB() {
+	_, err = db.Exec(`
+					CREATE TABLE task (id integer primary key autoincrement, 
+					title string default "New Task", 
+					description string default "No description.", 
+					created timestamp default current_timestamp, 
+					done integer default 0)
+					`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = db.Exec("INSERT INTO task (title,description) VALUES (?,?)", "Demo Task #1", "Please add a description.")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = db.Exec("INSERT INTO task (title,description) VALUES (?,?)", "Demo Task #2", "Click on the title or description to edit them.")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
