@@ -82,11 +82,11 @@ func createTask(task Task) int64 {
 
 func createDB() {
 	_, err = db.Exec(`
-					CREATE TABLE task (id integer primary key autoincrement, 
-					title string default "New Task", 
-					description string default "No description.", 
-					created timestamp default current_timestamp, 
-					done integer default 0)
+					CREATE TABLE task (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+					title STRING DEFAULT 'New Task', 
+					description STRING DEFAULT 'No description.', 
+					created TIMESTAMP DEFAULT current_timestamp, 
+					done INTEGER DEFAULT 0)
 					`)
 	if err != nil {
 		log.Fatal(err)
