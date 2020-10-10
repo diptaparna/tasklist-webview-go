@@ -5,8 +5,10 @@ package main
 import "C"
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gobuffalo/packr"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/webview/webview"
 	"log"
@@ -31,7 +33,7 @@ func AddTask(task Task) {
 		log.Println("Cannot convert Task object to JSON.")
 		return
 	}
-	w.Eval(fmt.Sprintf(`addTask(%s)`, string(taskStr)))
+	w.Eval(fmt.Sprintf("addTask(%s)", string(taskStr)))
 }
 
 func onLoad() {
@@ -123,16 +125,16 @@ func main() {
 	w = webview.New(debug)
 	defer w.Destroy()
 
-	w.SetTitle("Minimal webview example")
+	w.SetTitle("Task List")
 	w.SetSize(600, 600, webview.HintFixed)
 	C.gtk_window_set_keep_above((*C.GtkWindow)(w.Window()), 1)
 
-	PWD, err := os.Getwd()
+	box := packr.NewBox("./assets")
+	html, err := box.Find("index.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	w.Navigate(fmt.Sprintf("file://%s/assets/index.html", PWD))
+	w.Navigate("data:text/html;base64," + base64.StdEncoding.EncodeToString(html))
 	w.Bind("onLoad", onLoad)
 	w.Bind("updateTask", updateTask)
 	w.Bind("createTask", createTask)
