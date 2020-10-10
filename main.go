@@ -11,6 +11,7 @@ import (
 	"github.com/webview/webview"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 var w webview.WebView
@@ -102,7 +103,17 @@ func createDB() {
 }
 
 func main() {
-	db, err = sql.Open("sqlite3", "assets/taskdb.sqlite3")
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	appConfigDir := filepath.Join(configDir, "tasklist")
+	err = os.MkdirAll(appConfigDir, 0700)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbpath := filepath.Join(appConfigDir, "taskdb.sqlite3")
+	db, err = sql.Open("sqlite3", dbpath)
 	if err != nil {
 		log.Fatal(err)
 	}
